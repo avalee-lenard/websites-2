@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Billboard Graphic",
+    "section": "",
+    "text": "library(tidyverse)\n\n\ndata(billboard, package = \"tidyr\")\n\nbillboard_long &lt;- billboard |&gt;\n  pivot_longer(\n    cols = starts_with(\"wk\"),\n    names_to = \"week\",\n    names_prefix = \"wk\",\n    names_transform = list(week = as.integer),\n    values_to = \"rank\",\n    values_drop_na = TRUE\n  )\n\ntop_songs &lt;- billboard_long |&gt;\n  count(artist, track, name = \"weeks_on_chart\") |&gt;\n  slice_max(weeks_on_chart, n = 12, with_ties = FALSE) |&gt;\n  mutate(song = paste(track, artist, sep = \" - \"))\n\nbillboard_long |&gt;\n  inner_join(top_songs, by = c(\"artist\", \"track\")) |&gt;\n  ggplot(aes(week, rank, group = song)) +\n  geom_line(color = \"#39d5c5\", linewidth = 1) +\n  geom_point(color = \"#f4c95d\", size = 1.5) +\n  facet_wrap(vars(song), ncol = 4) +\n  scale_y_reverse(breaks = c(1, 25, 50, 75, 100)) +\n  labs(\n    title = \"The long runners\",\n    subtitle = \"Weekly Billboard rank for the 12 songs charting the most weeks\",\n    x = \"Week on the chart\",\n    y = \"Billboard rank (1 = highest)\",\n    caption = \"Each panel follows one song; gaps after its final chart week are not shown.\"\n  ) +\n  theme_minimal(base_size = 12) +\n  theme(\n    plot.background = element_rect(fill = \"#17212b\", color = NA),\n    panel.background = element_rect(fill = \"#17212b\", color = NA),\n    panel.grid.minor = element_blank(),\n    strip.text = element_text(color = \"#ffffff\", face = \"bold\", size = 8),\n    text = element_text(color = \"#e8eef2\"),\n    axis.text = element_text(color = \"#c5d0d8\"),\n    plot.title = element_text(face = \"bold\", size = 20, color = \"#ffffff\"),\n    plot.subtitle = element_text(color = \"#39d5c5\"),\n    plot.caption = element_text(color = \"#c5d0d8\")\n  )"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "My name is Avalee Lenard and I am going to sail around the world! Kane’s Free Data Science Bootcamp"
+  },
+  {
+    "objectID": "about.html#about-me",
+    "href": "about.html#about-me",
+    "title": "About",
+    "section": "",
+    "text": "My name is Avalee Lenard and I am going to sail around the world! Kane’s Free Data Science Bootcamp"
+  }
+]
