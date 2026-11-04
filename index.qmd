@@ -1,7 +1,54 @@
 ---
-title: "websites 2"
+title: "Billboard Graphic"
 ---
 
-This is a Quarto website.
+```{r}
+#| message: false
+library(tidyverse)
+```
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+```{r}
+data(billboard, package = "tidyr")
+
+billboard_long <- billboard |>
+  pivot_longer(
+    cols = starts_with("wk"),
+    names_to = "week",
+    names_prefix = "wk",
+    names_transform = list(week = as.integer),
+    values_to = "rank",
+    values_drop_na = TRUE
+  )
+
+top_songs <- billboard_long |>
+  count(artist, track, name = "weeks_on_chart") |>
+  slice_max(weeks_on_chart, n = 12, with_ties = FALSE) |>
+  mutate(song = paste(track, artist, sep = " - "))
+
+billboard_long |>
+  inner_join(top_songs, by = c("artist", "track")) |>
+  ggplot(aes(week, rank, group = song)) +
+  geom_line(color = "#39d5c5", linewidth = 1) +
+  geom_point(color = "#f4c95d", size = 1.5) +
+  facet_wrap(vars(song), ncol = 4) +
+  scale_y_reverse(breaks = c(1, 25, 50, 75, 100)) +
+  labs(
+    title = "The long runners",
+    subtitle = "Weekly Billboard rank for the 12 songs charting the most weeks",
+    x = "Week on the chart",
+    y = "Billboard rank (1 = highest)",
+    caption = "Each panel follows one song; gaps after its final chart week are not shown."
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.background = element_rect(fill = "#17212b", color = NA),
+    panel.background = element_rect(fill = "#17212b", color = NA),
+    panel.grid.minor = element_blank(),
+    strip.text = element_text(color = "#ffffff", face = "bold", size = 8),
+    text = element_text(color = "#e8eef2"),
+    axis.text = element_text(color = "#c5d0d8"),
+    plot.title = element_text(face = "bold", size = 20, color = "#ffffff"),
+    plot.subtitle = element_text(color = "#39d5c5"),
+    plot.caption = element_text(color = "#c5d0d8")
+  )
+```
